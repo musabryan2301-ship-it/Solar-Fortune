@@ -1,6 +1,3 @@
-
-<!DOCTYPE html>
-<html lang="fr">
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -20,7 +17,8 @@ h1{color:#ffe47a;font-size:34px;margin:12px 0}
 .panel{
   max-width:480px;margin:20px auto;padding:18px;
   border:2px solid #e7bd59;border-radius:18px;
-  background:#10152be8;box-shadow:0 0 25px #2769ff55;
+  background:#10152b;
+  box-shadow:0 0 25px #2769ff55;
 }
 .credits{font-size:21px;color:#ffe47a;margin:12px}
 .machine{
@@ -28,15 +26,13 @@ h1{color:#ffe47a;font-size:34px;margin:12px 0}
   gap:5px;background:#050817;padding:8px;
   border:2px solid #6378bd;border-radius:12px;
 }
-.reel{
-  display:flex;flex-direction:column;gap:5px;
-}
+.reel{display:flex;flex-direction:column;gap:5px}
 .symbol{
   background:linear-gradient(#26385e,#11172d);
   border:1px solid #43598b;border-radius:8px;
   min-width:0;height:65px;display:flex;
   align-items:center;justify-content:center;
-  font-size:clamp(23px,7vw,35px);
+  font-size:clamp(20px,6vw,32px);
 }
 button{
   border:0;border-radius:12px;padding:14px;
@@ -65,7 +61,7 @@ button{
   <button id="spin">🚀 SPIN — 10 CRÉDITS</button>
   <p id="message">Prêt pour le décollage ?</p>
   <p class="info">
-    3 symboles identiques sur une ligne : gain !<br>
+    3 symboles identiques côte à côte : gain !<br>
     ☀️ Soleil : 100 crédits<br>
     💎 Cristal : 50 crédits<br>
     🌍 Planète : 25 crédits<br>
@@ -78,17 +74,24 @@ button{
 <p class="info">Prototype de démonstration • Crédits virtuels uniquement</p>
 
 <script>
-const symbols = ["☀️","💎","🌍","🪐","⭐","🚀","🌙"];
-const machine = document.getElementById("machine");
-const creditsText = document.getElementById("credits");
-const message = document.getElementById("message");
-const spin = document.getElementById("spin");
-let credits = 1000;
-let busy = false;
-let board = [];
+const symbols=["☀️","💎","🌍","🪐","⭐","🚀","🌙"];
+const machine=document.getElementById("machine");
+const creditsText=document.getElementById("credits");
+const message=document.getElementById("message");
+const spin=document.getElementById("spin");
+let credits=1000;
+let busy=false;
+let board=[];
 
-function draw(){
-  machine.innerHTML = "";
+function randomSymbol(){
+  return symbols[Math.floor(Math.random()*symbols.length)];
+}
+
+function newBoard(){
+  board=Array.from({length:3},()=> 
+    Array.from({length:5},randomSymbol)
+  );
+  machine.innerHTML="";
   for(let c=0;c<5;c++){
     const reel=document.createElement("div");
     reel.className="reel";
@@ -101,33 +104,26 @@ function draw(){
     machine.appendChild(reel);
   }
 }
-function randomSymbol(){
-  return symbols[Math.floor(Math.random()*symbols.length)];
-}
-function newBoard(){
-  board=Array.from({length:3},()=> 
-    Array.from({length:5},randomSymbol)
-  );
-  draw();
-}
+
 function update(){
   creditsText.textContent=credits;
   spin.disabled=busy||credits<10;
-  if(credits<10&&!busy) message.textContent="Plus de crédits ! Nouvelle partie.";
 }
+
 function checkWins(){
   const prizes={"☀️":100,"💎":50,"🌍":25,"⭐":15};
   let winnings=0;
   for(let r=0;r<3;r++){
-    for(let c=0;c<=2;c++){
+    for(let c=0;c<3;c++){
       const s=board[r][c];
       if(board[r][c+1]===s&&board[r][c+2]===s){
-        winnings+= (prizes[s]||0);
+        winnings+=prizes[s]||0;
       }
     }
   }
   return winnings;
 }
+
 spin.addEventListener("click",()=>{
   if(busy||credits<10)return;
   busy=true;
@@ -150,6 +146,7 @@ spin.addEventListener("click",()=>{
     }
   },100);
 });
+
 document.getElementById("reset").addEventListener("click",()=>{
   if(busy)return;
   credits=1000;
@@ -157,166 +154,7 @@ document.getElementById("reset").addEventListener("click",()=>{
   message.textContent="Nouvelle mission : bonne chance !";
   update();
 });
-newBoard();
-update();
-</script>
-</body>
-</html>
 
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Solar Fortune</title>
-<style>
-*{box-sizing:border-box}
-body{
-  margin:0;min-height:100vh;color:white;
-  font-family:Arial,sans-serif;text-align:center;
-  background:radial-gradient(ellipse at top,#203d78,#080b20 65%);
-  padding:20px 12px;
-}
-h1{color:#ffe47a;font-size:34px;margin:12px 0}
-.subtitle{color:#a9c9ff;letter-spacing:3px}
-.panel{
-  max-width:480px;margin:20px auto;padding:18px;
-  border:2px solid #e7bd59;border-radius:18px;
-  background:#10152be8;box-shadow:0 0 25px #2769ff55;
-}
-.credits{font-size:21px;color:#ffe47a;margin:12px}
-.machine{
-  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
-  gap:5px;background:#050817;padding:8px;
-  border:2px solid #6378bd;border-radius:12px;
-}
-.reel{
-  display:flex;flex-direction:column;gap:5px;
-}
-.symbol{
-  background:linear-gradient(#26385e,#11172d);
-  border:1px solid #43598b;border-radius:8px;
-  min-width:0;height:65px;display:flex;
-  align-items:center;justify-content:center;
-  font-size:clamp(23px,7vw,35px);
-}
-button{
-  border:0;border-radius:12px;padding:14px;
-  font-weight:bold;font-size:17px;cursor:pointer;
-}
-#spin{
-  margin-top:18px;width:100%;color:#171022;
-  background:linear-gradient(90deg,#ffe98c,#ffae32);
-  box-shadow:0 4px 0 #9c5b14;
-}
-#spin:disabled{opacity:.5}
-.info{color:#cbd5f5;font-size:14px;line-height:1.6}
-#message{min-height:28px;color:#ffe47a;font-weight:bold}
-</style>
-</head>
-<body>
-<div class="subtitle">MISSION SPATIALE</div>
-<h1>🚀 SOLAR FORTUNE</h1>
-<div>Explorez le système solaire</div>
-
-<div class="panel">
-  <div class="credits">
-    CRÉDITS : <span id="credits">1000</span>
-  </div>
-  <div class="machine" id="machine"></div>
-  <button id="spin">🚀 SPIN — 10 CRÉDITS</button>
-  <p id="message">Prêt pour le décollage ?</p>
-  <p class="info">
-    3 symboles identiques sur une ligne : gain !<br>
-    ☀️ Soleil : 100 crédits<br>
-    💎 Cristal : 50 crédits<br>
-    🌍 Planète : 25 crédits<br>
-    ⭐ Étoile : 15 crédits
-  </p>
-  <button id="reset" style="background:#26385e;color:white">
-    Nouvelle partie
-  </button>
-</div>
-<p class="info">Prototype de démonstration • Crédits virtuels uniquement</p>
-
-<script>
-const symbols = ["☀️","💎","🌍","🪐","⭐","🚀","🌙"];
-const machine = document.getElementById("machine");
-const creditsText = document.getElementById("credits");
-const message = document.getElementById("message");
-const spin = document.getElementById("spin");
-let credits = 1000;
-let busy = false;
-let board = [];
-
-function draw(){
-  machine.innerHTML = "";
-  for(let c=0;c<5;c++){
-    const reel=document.createElement("div");
-    reel.className="reel";
-    for(let r=0;r<3;r++){
-      const cell=document.createElement("div");
-      cell.className="symbol";
-      cell.textContent=board[r][c];
-      reel.appendChild(cell);
-    }
-    machine.appendChild(reel);
-  }
-}
-function randomSymbol(){
-  return symbols[Math.floor(Math.random()*symbols.length)];
-}
-function newBoard(){
-  board=Array.from({length:3},()=> 
-    Array.from({length:5},randomSymbol)
-  );
-  draw();
-}
-function update(){
-  creditsText.textContent=credits;
-  spin.disabled=busy||credits<10;
-  if(credits<10&&!busy) message.textContent="Plus de crédits ! Nouvelle partie.";
-}
-function checkWins(){
-  const prizes={"☀️":100,"💎":50,"🌍":25,"⭐":15};
-  let winnings=0;
-  for(let r=0;r<3;r++){
-    for(let c=0;c<=2;c++){
-      const s=board[r][c];
-      if(board[r][c+1]===s&&board[r][c+2]===s){
-        winnings+= (prizes[s]||0);
-      }
-    }
-  }
-  return winnings;
-}
-spin.addEventListener("click",()=>{
-  if(busy||credits<10)return;
-  busy=true;
-  credits-=10;
-  update();
-  message.textContent="Exploration en cours…";
-  let count=0;
-  const animation=setInterval(()=>{
-    newBoard();
-    count++;
-    if(count>=10){
-      clearInterval(animation);
-      const winnings=checkWins();
-      credits+=winnings;
-      message.textContent=winnings>0
-        ?"✨ Vous gagnez "+winnings+" crédits !"
-        :"Pas de combinaison. Retentez votre chance !";
-      busy=false;
-      update();
-    }
-  },100);
-});
-document.getElementById("reset").addEventListener("click",()=>{
-  if(busy)return;
-  credits=1000;
-  newBoard();
-  message.textContent="Nouvelle mission : bonne chance !";
-  update();
-});
 newBoard();
 update();
 </script>
